@@ -31,6 +31,7 @@ Deep Learning for Chem
     tokenizer = ChemByteLevelBPETokenizer()
     tokenizer.train(trainer, paths)
     tokenizer.save(dest_path, model_name)
+
  ```   
 ###### Use Tokenizer
 
