@@ -226,6 +226,19 @@ from tokenizers.normalizers import Lowercase, unicode_normalizer_from_str, Strip
 from tokenizers.pre_tokenizers import CharDelimiterSplit, PreTokenizer
 from utils import generateBricksLibrary
 Offsets = Tuple[int, int]
+
+class MurckoMixin(object):
+    def pre_tokenize(self, sequence: str) -> List[Tuple[str, Offsets]]:
+        mol=Chem.
+        bms = MurckoScaffold.GetScaffoldForMol(mol)
+        rgroups = Chem.ReplaceCore(mol, bms)
+        pieces = Chem.GetMolFrags(rgroups)
+
+        core = Chem.ReplaceSidechains(mol, bms)
+        []
+
+        return  [(l, (0, 1)) for i, l in enumerate(split_smiles(sequence.strip()))]
+
 class MoleculePretokenizer(object):
     def __init__(self) -> None:
         """ Instantiate a new Whitespace PreTokenizer """
