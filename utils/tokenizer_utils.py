@@ -235,7 +235,7 @@ class MurckoMixin(object):
         pieces = Chem.GetMolFrags(rgroups)
 
         core = Chem.ReplaceSidechains(mol, bms)
-        []
+
 
         return  [(l, (0, 1)) for i, l in enumerate(split_smiles(sequence.strip()))]
 
@@ -263,6 +263,7 @@ class ChemByteLevelBPETokenizer(BaseTokenizer):
         self,
         vocab_file: Optional[str] = None,
         merges_file: Optional[str] = None,
+        molmixin:Optional[object]=None,
         add_prefix_space: bool = False,
         lowercase: bool = False,
         dropout: Optional[float] = None,
@@ -299,6 +300,9 @@ class ChemByteLevelBPETokenizer(BaseTokenizer):
             else:
                 tokenizer.normalizer = normalizers[0]
 
+        if molmixin:
+            class C1_10(MoleculePretokenizer, molmixin): pass
+            pretokeiner=C1_10()
         tokenizer.pre_tokenizer =pre_tokenizers.PreTokenizer.custom(MoleculePretokenizer())
         tokenizer.decoder = decoders.Decoder.custom(MoleculePretokenizer())
 
