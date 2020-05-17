@@ -68,7 +68,7 @@ def train_tokenizer_from_scratch(tokenizer_type, data_path="../data/drug_token/"
     tokenizer.save(dest_path, model_name)
 
 
-def extraxt_texts_for_tokenizer(files_path='E:/Projects/DGCOMM/noncomm_use_subset', dest_path='../data/tokenizer/'):
+def extraxt_texts_for_tokenizer(files_path='../data/noncomm_use_subset', dest_path='../data/tokenizer/'):
     for n in os.listdir(files_path):
         text = ''
         try:
