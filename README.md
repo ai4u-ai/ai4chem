@@ -50,4 +50,49 @@ Deep Learning for Chem
             if decoded_smi ==smi:
                      logger.info('correct')
             else:
-                      logger.info('not correct')```
+                      logger.info('not correct')
+```
+
+#### Affinity Prediciton
+
+    ```
+    max_seq_length = 512
+
+    tokenizer = ChemByteLevelBPETokenizer.from_pretrained("bert-large-uncased-whole-word-masking-finetuned-squad")
+    config = BertConfig.from_pretrained('bert-large-uncased-whole-word-masking-finetuned-squad')
+
+    affinityPrecictor = TFBertForAffinityPrediction(config)
+
+    # Download configuration from S3 and cache.
+   
+
+    dataset_file = "desc_canvas_aug30.csv"
+    dataset = pd.read_csv(os.path.join('../data', dataset_file))
+    train_dataset = dataset.sample(frac=0.8, random_state=0)
+    test_dataset = dataset.drop(train_dataset.index)
+
+    num_test_batch = 12
+    molecules = []
+    train = []
+    labels = []
+    optimizer = tf.keras.optimizers.RMSprop(0.001)
+
+    affinityPrecictor.compile(loss='mse', optimizer=optimizer,
+                              metrics=['mae', 'mse'])
+    train = [[i['mol'][:511], i['mol'][:511]] for _, i in islice(train_dataset.iterrows(), num_test_batch)]
+    labels = [i['pIC50'] for _, i in islice(train_dataset.iterrows(), num_test_batch)]
+    train = tokenizer.batch_encode_plus(train, return_tensors="pt", add_special_tokens=True, pad_to_max_length=True)[
+        "input_ids"]
+    history = affinityPrecictor.fit(tf.convert_to_tensor(train), tf.convert_to_tensor(labels),
+                                    epochs=200, verbose=0, validation_split=0.2,
+                                    callbacks=[tfdocs.modeling.EpochDots(report_every=2)])
+    print(affinityPrecictor.predict(tf.convert_to_tensor(train)))
+    plotter = tfdocs.plots.HistoryPlotter(smoothing_std=2)
+    plotter.plot({'Basic': history}, metric="mae")
+
+    plt.ylabel('MAE [MPG]')
+    plotter.plot({'Basic': history}, metric="mse")
+
+    plt.ylabel('MSE [MPG^2]')
+
+```
