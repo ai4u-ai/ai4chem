@@ -229,7 +229,7 @@ Offsets = Tuple[int, int]
 
 class MurckoMixin(object):
     def pre_tokenize(self, sequence: str) -> List[Tuple[str, Offsets]]:
-        mol=Chem.
+        mol=  Chem.MolFromSmiles(sequence)
         bms = MurckoScaffold.GetScaffoldForMol(mol)
         rgroups = Chem.ReplaceCore(mol, bms)
         pieces = Chem.GetMolFrags(rgroups)
