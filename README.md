@@ -58,13 +58,14 @@ Deep Learning for Chem
     ```
     max_seq_length = 512
 
-    tokenizer = ChemByteLevelBPETokenizer.from_pretrained("bert-large-uncased-whole-word-masking-finetuned-squad")
+    merges = "data/models/covid-tokenizer-merges.txt"
+    vocab = "data/models/covid-tokenizer-vocab.json"
+    tokenizer = ChemByteLevelBPETokenizer(vocab, merges)
+    tokenizer.add_special_tokens(["<pad>", "<mask>"])
+    tokenizer.enable_truncation(max_length=120)
     config = BertConfig.from_pretrained('bert-large-uncased-whole-word-masking-finetuned-squad')
 
     affinityPrecictor = TFBertForAffinityPrediction(config)
-
-    # Download configuration from S3 and cache.
-   
 
     dataset_file = "desc_canvas_aug30.csv"
     dataset = pd.read_csv(os.path.join('../data', dataset_file))
@@ -75,12 +76,14 @@ Deep Learning for Chem
     molecules = []
     train = []
     labels = []
+    
     optimizer = tf.keras.optimizers.RMSprop(0.001)
 
     affinityPrecictor.compile(loss='mse', optimizer=optimizer,
                               metrics=['mae', 'mse'])
     train = [[i['mol'][:511], i['mol'][:511]] for _, i in islice(train_dataset.iterrows(), num_test_batch)]
     labels = [i['pIC50'] for _, i in islice(train_dataset.iterrows(), num_test_batch)]
+   
     train = tokenizer.batch_encode_plus(train, return_tensors="pt", add_special_tokens=True, pad_to_max_length=True)[
         "input_ids"]
     history = affinityPrecictor.fit(tf.convert_to_tensor(train), tf.convert_to_tensor(labels),
