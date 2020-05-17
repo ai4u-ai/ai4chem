@@ -231,7 +231,7 @@ class MoleculePretokenizer(object):
         """ Instantiate a new Whitespace PreTokenizer """
         pass
     def pre_tokenize(self, sequence: str) -> List[Tuple[str, Offsets]]:
-        # [(l, (i, i + len(l) - 1)) for i, l in enumerate(split_smiles(sequence.strip()))]
+
 
         return  [(l, (0, 1)) for i, l in enumerate(split_smiles(sequence.strip()))]
 
